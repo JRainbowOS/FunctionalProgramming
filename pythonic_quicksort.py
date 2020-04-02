@@ -1,37 +1,52 @@
+from time import perf_counter
+from typing import List
 
-def partition(arr, low, high): 
-    i = (low - 1 )         # index of smaller element 
-    pivot = arr[high]     # pivot 
-  
-    for j in range(low, high): 
-  
-        # If current element is smaller than or 
-        # equal to pivot 
-        if arr[j] <= pivot: 
-          
-            # increment index of smaller element 
-            i = i + 1 
-            arr[i], arr[j] = arr[j], arr[i] 
-  
-    arr[i + 1], arr[high] = arr[high], arr[i + 1] 
-    return ( i + 1 ) 
-  
-  
-# Function to do Quick sort 
-def quicksort(arr, low, high): 
-    if low < high: 
-  
-        # pi is partitioning index, arr[p] is now 
-        # at right place 
-        pi = partition(arr, low, high) 
-  
-        # Separately sort elements before 
-        # partition and after partition 
-        quickSort(arr, low, pi-1) 
-        quickSort(arr, pi + 1, high) 
+def partition(array: List, start: int, end: int):
+    pivot = array[start]
+    low = start + 1
+    high = end
+
+    while True:
+        # If the current value we're looking at is larger than the pivot
+        # it's in the right place (right side of pivot) and we can move left,
+        # to the next element.
+        # We also need to make sure we haven't surpassed the low pointer, since that
+        # indicates we have already moved all the elements to their correct side of the pivot
+        while low <= high and array[high] >= pivot:
+            high = high - 1
+
+        # Opposite process of the one above
+        while low <= high and array[low] <= pivot:
+            low = low + 1
+
+        # We either found a value for both high and low that is out of order
+        # or low is higher than high, in which case we exit the loop
+        if low <= high:
+            array[low], array[high] = array[high], array[low]
+            # The loop continues
+        else:
+            # We exit out of the loop
+            break
+
+    array[start], array[high] = array[high], array[start]
+
+    return high
+
+def quicksort(array: list, start: int, end: int):
+    if start >= end:
+        return
+
+    p = partition(array, start, end)
+    quicksort(array, start, p - 1)
+    quicksort(array, p + 1, end)
+
+
+def main():
+    start = perf_counter()
+    a = [1, 3, 2, 4, 0]
+    quicksort(a, 0, len(a) - 1) 
+    end = perf_counter()
+    print(f'Sorted list: {a} took {end - start:.02} seconds.')
 
 if __name__ == '__main__':
-    arr = [10, 7, 8, 9, 1, 5] 
-    n = len(arr) 
-    quickSort(arr,0,n-1) 
-    print(arr)
+    main()
